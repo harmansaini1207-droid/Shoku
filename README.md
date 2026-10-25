@@ -90,3 +90,4 @@ http://localhost:3000
 ```
 
 Zero configuration, zero API keys, zero cloud locks. Everything runs locally out of the box!
+
