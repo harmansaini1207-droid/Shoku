@@ -297,26 +297,46 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
           </div>
         </div>
 
-        {/* ── Living Heritage Craft Appraisal Dimensions ── */}
+        {/* ── Living Heritage Craft Studio Verified Credentials ── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           backgroundColor: '#e2ddd4',
           marginTop: 0,
-          padding: '32px 40px',
+          padding: '28px 36px',
           gap: '0',
           borderBottom: '1px solid rgba(0,0,0,0.06)',
         }}>
           {[
-            { label: 'TACTILE SENSORY', kanji: '触知伝承', score: '9.8', sub: 'SCALE I' },
-            { label: 'THERMAL INTUITION', kanji: '熱感知度', score: '9.4', sub: 'SCALE II' },
-            { label: 'LINEAGE SUCCESSION', kanji: '継承緊急度', score: '9.6', sub: 'GRADE A' },
-            { label: "OVERALL MASTERY", kanji: '総合格付', score: (featured.yearsExperience / 6).toFixed(2), sub: 'HERITAGE RATIO', big: true },
+            {
+              label: lang === 'ja' ? '修業年数' : 'YEARS OF DEDICATION',
+              kanji: '修業年数',
+              value: `${featured.yearsExperience} YRS`,
+              sub: lang === 'ja' ? '現役工房' : 'ACTIVE STUDIO',
+            },
+            {
+              label: lang === 'ja' ? '継承状況' : 'LINEAGE SUCCESSION',
+              kanji: '継承状況',
+              value: featured.noSuccessor ? (lang === 'ja' ? '後継者求む' : 'APPRENTICE OPEN') : (lang === 'ja' ? '継承継続中' : 'LINEAGE ACTIVE'),
+              sub: lang === 'ja' ? '後継者募集' : 'GUILD REGISTERED',
+            },
+            {
+              label: lang === 'ja' ? '工房拠点' : 'STUDIO REGION',
+              kanji: '工房拠点',
+              value: (featured.region || 'Japan').toUpperCase(),
+              sub: lang === 'ja' ? '伝統産地' : 'REGIONAL ATELIER',
+            },
+            {
+              label: lang === 'ja' ? '伝承身体知' : 'TACIT TECHNIQUES',
+              kanji: '伝承身体知',
+              value: `${featured.techniques?.length || 2} METHODS`,
+              sub: lang === 'ja' ? '身体知伝承' : 'DOCUMENTED REPERTOIRE',
+            },
           ].map((item, i) => (
             <div key={i} style={{
               textAlign: 'center',
               borderLeft: i > 0 ? '1px solid rgba(0,0,0,0.1)' : 'none',
-              padding: '0 24px',
+              padding: '0 20px',
             }}>
               {lang === 'ja' && (
                 <div style={{
@@ -331,32 +351,32 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
               )}
               <div style={{
                 fontFamily: '"Cinzel", serif',
-                fontSize: item.big ? '42px' : '11px',
-                fontWeight: item.big ? 400 : 700,
-                letterSpacing: item.big ? '0' : '2px',
+                fontSize: '18px',
+                fontWeight: 600,
+                letterSpacing: '1px',
                 color: '#121212',
-                textTransform: 'uppercase',
-                lineHeight: 1,
-                marginBottom: item.big ? '8px' : '6px',
+                lineHeight: 1.2,
+                marginBottom: '6px',
               }}>
-                {item.big ? item.score : item.label}
+                {item.value}
               </div>
               <div style={{
-                fontSize: '11px',
-                fontWeight: 600,
+                fontSize: '10px',
+                fontWeight: 700,
                 letterSpacing: '1.5px',
-                color: '#666',
+                color: '#555',
+                textTransform: 'uppercase',
+                marginBottom: '3px',
+              }}>
+                {item.label}
+              </div>
+              <div style={{
+                fontSize: '9px',
+                color: '#888',
+                letterSpacing: '1px',
                 textTransform: 'uppercase',
               }}>
-                {item.big ? item.label : (
-                  <span>
-                    <strong style={{ color: '#121212', fontSize: '18px', fontFamily: '"Cinzel", serif', fontWeight: 400 }}>
-                      {item.score}
-                    </strong>
-                    {' '}
-                    <span style={{ fontSize: '9px', color: '#888' }}>{item.sub}</span>
-                  </span>
-                )}
+                {item.sub}
               </div>
             </div>
           ))}
