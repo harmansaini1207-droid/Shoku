@@ -1,12 +1,5 @@
 # SHOKU (職人リンク)
 > **Preserving Japan's Vanishing Tacit Craft Heritage with Next-Gen Indian Talent**
-
-[![Next.js](https://img.shields.io/badge/Next.js-16%20(Turbopack)-black.svg)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Offline-First](https://img.shields.io/badge/Architecture-100%25%20Offline%20First-red.svg)]()
-[![Bilingual](https://img.shields.io/badge/Language-English%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E-gold.svg)]()
-
 ---
 
 ## 1. WHY THIS EXISTS (The Thesis)
@@ -75,18 +68,3 @@ The bottlenecks are:
 | `GET` | `/api/health` | None | `{ status: 'healthy', mode: 'offline-first' }` | Verifies runtime status |
 
 ---
-
-## 5. LOCAL RUN INSTRUCTIONS
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Start the development server
-npm run dev
-
-# 3. Open in your browser
-http://localhost:3000
-```
-
-Zero configuration, zero API keys, zero cloud locks. Everything runs locally out of the box!
