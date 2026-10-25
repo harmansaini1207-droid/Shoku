@@ -1,4 +1,4 @@
-﻿# 職 SHOKU — Craft Heritage × Human Potential
+# 職 SHOKU — Craft Heritage × Human Potential
 
 > **Connecting Japan's dying traditional crafts with India's next generation of artisans — powered by AI.**
 
@@ -209,13 +209,13 @@ SHOKU is built with an **editorial dark aesthetic** — evoking the precision, r
 
 ## 👥 Team
 
-Built at **[Hackathon Name]** — crafted with care, urgency, and a deep respect for what gets lost when knowledge dies with its keeper.
+Built by **Team Sonty** — crafted with care, urgency, and a deep respect for what gets lost when knowledge dies with its keeper.
 
 ---
 
 ## 📄 License
 
-MIT © 2025 SHOKU Team
+MIT © 2025 Team Sonty
 
 ---
 
