@@ -24,9 +24,9 @@ interface BusinessNavbarProps {
 
 function BusinessNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout, email }: BusinessNavbarProps) {
   const TABS: { id: BusinessTab; label: string; ja: string }[] = [
-    { id: 'home', label: 'Guild Archive', ja: '伝承総覧' },
-    { id: 'matching', label: 'Matching Engine', ja: '技能照合' },
-    { id: 'profile', label: 'Workshop Dossier', ja: '工房調書' },
+    { id: 'home', label: 'Workshops', ja: '工房一覧' },
+    { id: 'matching', label: 'Find Candidates', ja: '候補者検索' },
+    { id: 'profile', label: 'Workshop Profile', ja: '工房情報' },
   ];
 
   return (
@@ -51,7 +51,7 @@ function BusinessNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout,
               style={{ height: '22px', width: 'auto', display: 'block' }}
             />
             <div style={{ fontSize: '8px', letterSpacing: '1.5px', color: '#7a756f', textTransform: 'uppercase', marginTop: '2px' }}>
-              Guild Console
+              {lang === 'ja' ? '工房コンソール' : 'Workshop Console'}
             </div>
           </div>
         </div>
@@ -79,14 +79,7 @@ function BusinessNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout,
                 gap: '6px',
               }}
             >
-              <span>{tab.label}</span>
-              <span style={{
-                fontFamily: '"Shippori Mincho", serif',
-                fontSize: '10px',
-                opacity: currentTab === tab.id ? 0.65 : 0.45,
-              }}>
-                {tab.ja}
-              </span>
+              <span>{lang === 'ja' ? tab.ja : tab.label}</span>
             </button>
           ))}
         </div>
@@ -205,13 +198,15 @@ function MatchingEnginePage({
             marginBottom: '10px',
           }}>
             <span style={{ width: '6px', height: '6px', backgroundColor: '#b82d23', borderRadius: '1px' }} />
-            BILATERAL TACIT SKILL COMPATIBILITY MATRIX · 技能親和性照合
+            {lang === 'ja' ? '技能親和性照合システム' : 'SKILL COMPATIBILITY MATCHING'}
           </div>
           <h1 style={{ fontFamily: '"Cinzel", serif', fontSize: 'clamp(28px, 4vw, 38px)', fontWeight: 400, color: '#121212', margin: '0 0 10px' }}>
-            Artisan Kinship Evaluation Engine
+            {lang === 'ja' ? '徒弟候補者マッチング' : 'Candidate Matching Engine'}
           </h1>
           <p style={{ fontSize: '13px', color: '#55555e', lineHeight: 1.6, maxWidth: '680px' }}>
-            Powered by <strong>Gemini 2.5 Flash</strong> to autonomously extract applicant resumes, identify tactile skill synergies, and evaluate succession compatibility.
+            {lang === 'ja'
+              ? '職人の口伝や工房の技術要件に基づき、応募者の適性と親和性を自動評価します。'
+              : 'Evaluates applicant resumes against your workshop requirements and oral craft dictation to find the best fit.'}
           </p>
         </div>
 
@@ -219,7 +214,7 @@ function MatchingEnginePage({
           {/* Master Selector */}
           <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '2px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
             <label style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#55555e', display: 'block', marginBottom: '12px' }}>
-              Select Living Master Lineage / 伝承師範
+              {lang === 'ja' ? '工房・師範を選択' : 'Select Workshop / Master'}
             </label>
             <select
               value={selectedMasterId}
@@ -239,15 +234,21 @@ function MatchingEnginePage({
               }}
             >
               {masters.map((m) => (
-                <option key={m.id} value={m.id}>{m.name} ({m.nameJa}) — {m.craft.split('(')[0].trim()}</option>
+                <option key={m.id} value={m.id}>
+                  {lang === 'ja' ? `${m.nameJa} — ${m.craftJa || m.craft}` : `${m.name} — ${m.craft.split('(')[0].trim()}`}
+                </option>
               ))}
             </select>
 
             {selectedMaster && (
               <div style={{ background: '#faf8f4', borderRadius: '2px', padding: '16px', border: '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#121212' }}>{selectedMaster.name}</span>
-                  <span style={{ fontFamily: '"Shippori Mincho", serif', fontSize: '13px', color: '#b82d23' }}>{selectedMaster.nameJa}</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#121212' }}>
+                    {lang === 'ja' ? selectedMaster.nameJa : selectedMaster.name}
+                  </span>
+                  {lang === 'ja' && (
+                    <span style={{ fontFamily: '"Shippori Mincho", serif', fontSize: '13px', color: '#b82d23' }}>{selectedMaster.nameJa}</span>
+                  )}
                 </div>
                 <div style={{ fontSize: '11px', color: '#666', lineHeight: 1.5, marginBottom: '10px' }}>
                   {selectedMaster.region} · {selectedMaster.craft} · {selectedMaster.yearsExperience} Year Lineage
@@ -277,7 +278,7 @@ function MatchingEnginePage({
           <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '2px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
               <label style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#121212', margin: 0 }}>
-                APPRENTICE CANDIDATE POOL · 応募徒弟名簿
+                {lang === 'ja' ? '応募候補者名簿' : 'APPRENTICE CANDIDATE POOL'}
               </label>
               <span style={{
                 background: 'rgba(184,45,35,0.08)',
@@ -290,12 +291,14 @@ function MatchingEnginePage({
                 borderRadius: '1px',
                 textTransform: 'uppercase',
               }}>
-                ✦ Gemini 2.5 Flash Resume Extraction
+                ✦ AI Resume Extraction
               </span>
             </div>
 
             <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.6, marginBottom: '14px' }}>
-              Gemini reads applicants&apos; resumes, extracts relevant skill keywords, and evaluates how their tactile foundations align with Master {selectedMaster.name}&apos;s workshop.
+              {lang === 'ja'
+                ? '応募者の履歴書から技術キーワードを抽出し、工房の要件との適合度を評価します。'
+                : `AI reads applicants' resumes, extracts relevant skill keywords, and evaluates how their skills align with ${selectedMaster.name}'s workshop.`}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -344,7 +347,9 @@ function MatchingEnginePage({
             transition: 'background 0.2s',
           }}
         >
-          {loading ? 'Gemini 2.5 Flash Extracting Resumes & Kinship Matrix...' : 'Run Gemini Bilateral Kinship Analysis →'}
+          {loading
+            ? (lang === 'ja' ? '候補者を検索・照合中...' : 'Analyzing Candidate Resumes...')
+            : (lang === 'ja' ? '候補者を検索・照合する →' : 'Find Best Candidates →')}
         </button>
 
         {/* Results */}
@@ -506,6 +511,27 @@ function MatchingEnginePage({
             </div>
           </div>
         )}
+
+        {ran && results.length === 0 && (
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.08)',
+            borderRadius: '2px',
+            padding: '48px 32px',
+            textAlign: 'center',
+            color: '#666',
+            marginTop: '20px',
+          }}>
+            <div style={{ fontSize: '16px', fontWeight: 700, color: '#121212', marginBottom: '8px' }}>
+              {lang === 'ja' ? '一致する候補者が見つかりませんでした' : 'No Matching Candidates Found'}
+            </div>
+            <p style={{ fontSize: '13px', maxWidth: '520px', margin: '0 auto', lineHeight: 1.6 }}>
+              {lang === 'ja'
+                ? 'ご指定の専門分野に適合する候補者は現在登録されていません。新しい徒弟応募者が登録され次第、ここに表示されます。'
+                : 'There are currently no apprentice candidates registered who suit this specific profession. As new candidates apply with relevant skills, they will appear here.'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -523,21 +549,25 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
   const currentMaster = master || SEED_MASTERS[0];
 
   const [companyName, setCompanyName] = useState(
-    currentMaster.name ? `${currentMaster.name} Bladesmith Guild (工房)` : 'Yamato Bladesmith Guild'
+    currentMaster.name
+      ? (lang === 'ja' ? `${currentMaster.nameJa || currentMaster.name} 工房` : `${currentMaster.name} Workshop`)
+      : 'Sakai Bladesmith Workshop'
   );
   const [contactName, setContactName] = useState(currentMaster.name || 'Keisuke Sakai');
   const [city, setCity] = useState(currentMaster.region || 'Sakai, Osaka, Japan');
   const [craftFocus, setCraftFocus] = useState(currentMaster.craft || 'Sakai Forged Cutlery & Bladesmithing');
   const [description, setDescription] = useState(
     currentMaster.bio ||
-      '500-year cutlery forging lineage specializing in forge-welding (hizukuri) and water-quenching (yakiire). We require foreign apprentices dedicated to raw tacit metal craft.'
+      '500-year cutlery forging lineage specializing in forge-welding (hizukuri) and water-quenching (yakiire). We require apprentices dedicated to raw tacit metal craft.'
   );
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [audioURL, setAudioURL] = useState(currentMaster.audioDossierUrl || '');
   const [transcript, setTranscript] = useState(
     currentMaster.craftExplanation ||
-      '「当工房では500年にわたり伝統鍛造刃物の身体知と火色判断の技法を継承しています。日々の鍛錬に情熱を持ち、金工の基礎と規律を備えた国際的な弟子を受け入れ、代々の技を継承します。」\n\n(English: "In our workshop, we have preserved the tacit techniques of hand-hammered cutlery forging and radiant temperature judgment for over 500 years. We seek an international apprentice possessing foundational metalwork discipline, hand-eye coordination, and enduring dedication to master our generational lineage.")'
+      (lang === 'ja'
+        ? '「当工房では伝統鍛造刃物の身体知と火色判断の技法を継承しています。日々の鍛錬に情熱を持ち、金工の基礎と規律を備えた弟子を受け入れ、代々の技を継承します。」'
+        : 'In our workshop, we preserve traditional hand-hammered cutlery forging and radiant temperature judgment passed down for generations. We seek apprentices with metalwork discipline, hand-eye coordination, and enduring dedication to master our craft lineage.')
   );
   const [providerBadge, setProviderBadge] = useState<string>('Wispr Flow API');
   const [saving, setSaving] = useState(false);
@@ -545,9 +575,54 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
 
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
+  const speechTranscriptRef = useRef<string>('');
 
   const startRecording = async () => {
     try {
+      speechTranscriptRef.current = '';
+
+      // Initialize Web Speech API for instant in-person speech-to-text
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
+
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
+
+          recognition.onresult = (event: any) => {
+            let interim = '';
+            let final = '';
+            for (let i = 0; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                final += event.results[i][0].transcript + ' ';
+              } else {
+                interim += event.results[i][0].transcript;
+              }
+            }
+            const currentFull = (final + interim).trim();
+            if (currentFull) {
+              speechTranscriptRef.current = currentFull;
+              setTranscript(currentFull);
+              setProviderBadge('Live Dictation (In-Person)');
+            }
+          };
+
+          recognition.onerror = (e: any) => {
+            console.warn('Speech recognition warning:', e?.error);
+          };
+
+          recognition.start();
+          recognitionRef.current = recognition;
+        } catch (e) {
+          console.warn('SpeechRecognition initialization error:', e);
+        }
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mr = new MediaRecorder(stream);
       chunksRef.current = [];
@@ -559,7 +634,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
         const localUrl = URL.createObjectURL(blob);
         setAudioURL(localUrl);
 
-        // Auto transcribe with Wispr Flow API endpoint
+        // Auto transcribe with Wispr Flow API / server endpoint
         setTranscribing(true);
         try {
           const formData = new FormData();
@@ -573,7 +648,8 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
 
           if (res.ok) {
             const data = await res.json();
-            if (data.text) {
+            // If in-person live speech recognition was not available or empty, use server result
+            if (data.text && !speechTranscriptRef.current) {
               setTranscript(data.text);
               setProviderBadge(data.provider || 'Wispr Flow API');
             }
@@ -595,6 +671,12 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
   };
 
   const stopRecording = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+      recognitionRef.current = null;
+    }
     if (mediaRef.current && mediaRef.current.state !== 'inactive') {
       mediaRef.current.stop();
       mediaRef.current.stream.getTracks().forEach((track) => track.stop());
@@ -606,8 +688,8 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
     setAudioURL('https://www.w3schools.com/html/horse.mp3');
     setTranscript(
       lang === 'en'
-        ? '"We are Sakai Forged Cutlery Guild located in Sakai, Osaka. We preserve 500-year forge-welding (hizukuri) and water-quenching techniques. We seek dedicated international apprentices who possess tactile sensitivity, discipline, and endurance to master Japanese bladesmithing."'
-        : '「私たちは大阪・堺の打刃物工房です。500年の鍛造・火造り・焼き入れ技術を守り、熱意ある国際的な弟子を受け入れ、代々の技法を身体知として正統に継承します。」'
+        ? 'We are Sakai Forged Cutlery Guild located in Sakai, Osaka. We preserve 500-year forge-welding and water-quenching techniques. We seek dedicated international apprentices who possess tactile sensitivity, discipline, and endurance to master bladesmithing.'
+        : '私たちは大阪・堺の打刃物工房です。500年の鍛造・火造り・焼き入れ技術を守り、熱意ある国際的な弟子を受け入れ、代々の技法を身体知として正統に継承します。'
     );
     setProviderBadge('Wispr Flow API');
   };
@@ -704,7 +786,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 borderRadius: '1px',
               }}
             />
-            WORKSHOP & GUILD REGISTRATION · 工房登録調書
+            {lang === 'ja' ? '工房登録調書' : 'WORKSHOP PROFILE'}
           </div>
           <h1
             style={{
@@ -715,7 +797,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
               margin: 0,
             }}
           >
-            Master Studio Dossier
+            {lang === 'ja' ? '工房情報' : 'Workshop Profile'}
           </h1>
           <p
             style={{
@@ -725,12 +807,13 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
               lineHeight: 1.6,
             }}
           >
-            Accreditation credentials, craft specializations, and Wispr Flow voice dictation for
-            bilateral apprentice matching via Gemini AI.
+            {lang === 'ja'
+              ? '工房情報、専門分野、および候補者マッチングに使用される音声記録を管理します。'
+              : 'Manage your workshop details, craft specializations, and voice explanation used to match apprentice candidates.'}
           </p>
         </div>
 
-        {/* Guild Crest Emblem */}
+        {/* Workshop Crest Emblem */}
         <div
           style={{
             display: 'flex',
@@ -767,7 +850,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 lineHeight: 1,
               }}
             >
-              閣
+              {lang === 'ja' ? '工房' : '匠'}
             </span>
             <span
               style={{
@@ -778,7 +861,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 marginTop: '4px',
               }}
             >
-              GUILD
+              {lang === 'ja' ? '工房' : 'STUDIO'}
             </span>
           </div>
           <div>
@@ -801,7 +884,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
           <div>
-            <label style={labelStyle}>Company / Workshop Name · 工房名</label>
+            <label style={labelStyle}>{lang === 'ja' ? '工房名・会社名' : 'Company / Workshop Name'}</label>
             <input
               style={inputStyle}
               value={companyName}
@@ -810,7 +893,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
             />
           </div>
           <div>
-            <label style={labelStyle}>Guild Representative · 責任者</label>
+            <label style={labelStyle}>{lang === 'ja' ? '責任者・代表者氏名' : 'Owner / Representative Name'}</label>
             <input
               style={inputStyle}
               value={contactName}
@@ -822,7 +905,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
           <div>
-            <label style={labelStyle}>Prefecture & City · 所在地</label>
+            <label style={labelStyle}>{lang === 'ja' ? '所在地（都道府県・市区町村）' : 'Location (Prefecture & City)'}</label>
             <input
               style={inputStyle}
               value={city}
@@ -831,7 +914,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
             />
           </div>
           <div>
-            <label style={labelStyle}>Primary Craft Taxonomy · 専門分野</label>
+            <label style={labelStyle}>{lang === 'ja' ? '工芸専門分野' : 'Craft Specialization'}</label>
             <input
               style={inputStyle}
               value={craftFocus}
@@ -842,7 +925,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
         </div>
 
         <div>
-          <label style={labelStyle}>Workshop Statement & Philosophy · 工房理念</label>
+          <label style={labelStyle}>{lang === 'ja' ? '工房理念・概要' : 'Workshop Overview & Background'}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -892,7 +975,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   boxShadow: recording ? '0 0 8px #b82d23' : 'none',
                 }}
               />
-              MASTER ORAL STATEMENT DICTATION · 口伝音声記録 (WISPR FLOW API)
+              {lang === 'ja' ? '口伝音声記録 (音声認識)' : 'VOICE RECORDING · CRAFT EXPLANATION'}
             </div>
             <span
               style={{
@@ -918,10 +1001,9 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
               marginBottom: '20px',
             }}
           >
-            Speak freely about your atelier&apos;s daily craft practice, tacit techniques, and what
-            tactile aptitude you expect from apprentices. Wispr Flow transcribes your voice into
-            editable text, which Gemini AI directly uses to compare candidate resumes for the best
-            fit.
+            {lang === 'ja'
+              ? '工房の日々の技術伝承や弟子に求める適性を自由にお話しください。音声が自動で文字起こしされ、候補者の履歴書照合に活用されます。'
+              : 'Speak freely about your craft techniques, daily workshop practice, and what skills you expect from apprentices. Your voice is transcribed live into editable text, which is used to match candidate resumes.'}
           </p>
 
           <div
@@ -954,7 +1036,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   gap: '8px',
                 }}
               >
-                <span>●</span> Start Audio Recording
+                <span>●</span> {lang === 'ja' ? '録音を開始' : 'Start Voice Recording'}
               </button>
             ) : (
               <button
@@ -977,7 +1059,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   gap: '8px',
                 }}
               >
-                <span>■</span> Stop Dictation & Transcribe
+                <span>■</span> {lang === 'ja' ? '録音を停止' : 'Stop Recording'}
               </button>
             )}
 
@@ -998,7 +1080,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 borderRadius: '2px',
               }}
             >
-              + Load Studio Sample Voice Dictation
+              {lang === 'ja' ? '+ サンプル音声を読み込む' : '+ Load Sample Craft Dictation'}
             </button>
 
             {audioURL && !recording && (
@@ -1034,7 +1116,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   animation: 'spin 0.8s linear infinite',
                 }}
               />
-              Transcribing Master Voice via Wispr Flow API...
+              {lang === 'ja' ? '音声を文字起こし中...' : 'Transcribing Voice Recording...'}
             </div>
           )}
 
@@ -1058,10 +1140,10 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   gap: '6px',
                 }}
               >
-                <span>✦</span> Transcribed Craft Lineage & Tacit Practice · 口伝・技法伝承詳細 (Owner Editable)
+                <span>✦</span> {lang === 'ja' ? '文字起こしされた技法伝承・要件（編集可能）' : 'Transcribed Craft Explanation (Editable)'}
               </label>
               <span style={{ fontSize: '9px', color: '#7a756f', letterSpacing: '1px' }}>
-                Used for Gemini Best Fit Analysis
+                {lang === 'ja' ? '候補者マッチングに使用' : 'Used for Candidate Matching'}
               </span>
             </div>
 
@@ -1069,7 +1151,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
               value={transcript}
               onChange={(e) => setTranscript(e.target.value)}
               rows={5}
-              placeholder="Your transcribed craft words appear here. You can freely edit, polish, or add specific apprentice requirements..."
+              placeholder={lang === 'ja' ? '文字起こしされた内容がここに表示されます。自由に編集や加筆が可能です...' : 'Your transcribed craft words appear here live as you speak. You can freely edit, polish, or add specific apprentice requirements...'}
               style={{
                 width: '100%',
                 padding: '14px 16px',
@@ -1093,8 +1175,9 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 lineHeight: 1.5,
               }}
             >
-              💡 This text is saved directly to your master profile. When candidate apprentices apply,
-              Gemini AI compares their resumes against these exact words to determine the kinship fit score and explanation.
+              💡 {lang === 'ja'
+                ? 'この内容は工房プロフィールに保存され、応募候補者の履歴書と照合して適合スコアを算出します。'
+                : 'This text is saved to your profile. Candidate resumes are evaluated against these exact words to determine matching scores and fit explanations.'}
             </div>
           </div>
         </div>
@@ -1121,10 +1204,10 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
           }}
         >
           {saving
-            ? 'Committing Dossier to Registry...'
+            ? (lang === 'ja' ? '保存中...' : 'Saving Workshop Profile...')
             : saved
-            ? '● Studio Dossier Certified & Saved · Kinship Profile Updated'
-            : 'Save Workshop Dossier →'}
+            ? (lang === 'ja' ? '● 保存完了 · 工房情報を更新しました' : '● Saved · Workshop Profile Updated')
+            : (lang === 'ja' ? '工房プロフィールを保存する →' : 'Save Workshop Profile →')}
         </button>
       </div>
     </div>

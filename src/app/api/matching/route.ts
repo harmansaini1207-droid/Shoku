@@ -133,7 +133,9 @@ export async function GET(req: NextRequest) {
 
   const baseResults = rankCandidatesForMaster(targetMaster, SEED_CANDIDATES);
   const geminiEvals = await evaluateWithGemini(targetMaster, SEED_CANDIDATES);
-  const finalResults = mergeEvals(baseResults, geminiEvals, targetMaster).sort((a, b) => b.score - a.score);
+  const finalResults = mergeEvals(baseResults, geminiEvals, targetMaster)
+    .filter((r) => r.score >= 45)
+    .sort((a, b) => b.score - a.score);
 
   return NextResponse.json({
     master: targetMaster,
@@ -154,7 +156,9 @@ export async function POST(req: NextRequest) {
 
     const baseResults = rankCandidatesForMaster(targetMaster, SEED_CANDIDATES);
     const geminiEvals = await evaluateWithGemini(targetMaster, SEED_CANDIDATES);
-    const finalResults = mergeEvals(baseResults, geminiEvals, targetMaster).sort((a, b) => b.score - a.score);
+    const finalResults = mergeEvals(baseResults, geminiEvals, targetMaster)
+      .filter((r) => r.score >= 45)
+      .sort((a, b) => b.score - a.score);
 
     return NextResponse.json({
       master: targetMaster,

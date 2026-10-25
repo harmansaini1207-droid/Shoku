@@ -16,13 +16,13 @@ interface EditorialGalleryShowcaseProps {
 }
 
 /* ── per-master craft taxonomy ── */
-const CRAFT_IMAGES: Record<string, { bg: string; label: string; kanji: string }> = {
-  'm-sakai-keisuke': { bg: '#1a1209', label: 'Metalwork · 鍛冶', kanji: '鍛' },
-  'm-mino-chiyo': { bg: '#e8ede8', label: 'Paper · 和紙', kanji: '紙' },
-  'm-arimatsu-hiroshi': { bg: '#0d1a2e', label: 'Textiles · 絞り', kanji: '染' },
-  'm-bizen-kenji': { bg: '#1c0a03', label: 'Ceramics · 焼き物', kanji: '陶' },
-  'm-edo-takashi': { bg: '#0a1020', label: 'Crystal · 切子', kanji: '硝' },
-  'm-kyoto-nobuo': { bg: '#1a1205', label: 'Woodwork · 木工', kanji: '木' },
+const CRAFT_IMAGES: Record<string, { bg: string; label: string; jaLabel: string; kanji: string }> = {
+  'm-sakai-keisuke': { bg: '#1a1209', label: 'Metalwork', jaLabel: '鍛冶', kanji: '鍛' },
+  'm-mino-chiyo': { bg: '#e8ede8', label: 'Paper', jaLabel: '和紙', kanji: '紙' },
+  'm-arimatsu-hiroshi': { bg: '#0d1a2e', label: 'Textiles', jaLabel: '染織', kanji: '染' },
+  'm-bizen-kenji': { bg: '#1c0a03', label: 'Ceramics', jaLabel: '陶芸', kanji: '陶' },
+  'm-edo-takashi': { bg: '#0a1020', label: 'Crystal', jaLabel: '切子', kanji: '硝' },
+  'm-kyoto-nobuo': { bg: '#1a1205', label: 'Woodwork', jaLabel: '木工', kanji: '木' },
 };
 
 /* craft-specific local Japanese craft images */
@@ -160,14 +160,16 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
               }}>
                 {featured.name}
               </h2>
-              <span style={{
-                fontFamily: '"Shippori Mincho", serif',
-                fontSize: '20px',
-                color: '#888',
-                fontWeight: 400,
-              }}>
-                {featured.nameJa}
-              </span>
+              {lang === 'ja' && (
+                <span style={{
+                  fontFamily: '"Shippori Mincho", serif',
+                  fontSize: '20px',
+                  color: '#888',
+                  fontWeight: 400,
+                }}>
+                  {featured.nameJa}
+                </span>
+              )}
             </div>
             <div style={{
               fontSize: '11px',
@@ -180,7 +182,7 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
               {featured.craft}
             </div>
             <div style={{ fontSize: '11px', color: '#888', letterSpacing: '0.5px' }}>
-              {featured.regionJa} — {featured.region}
+              {lang === 'ja' ? `${featured.regionJa} — ${featured.region}` : featured.region}
             </div>
           </div>
 
@@ -316,15 +318,17 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
               borderLeft: i > 0 ? '1px solid rgba(0,0,0,0.1)' : 'none',
               padding: '0 24px',
             }}>
-              <div style={{
-                fontFamily: '"Shippori Mincho", serif',
-                fontSize: '11px',
-                color: '#8c827a',
-                letterSpacing: '2px',
-                marginBottom: '6px',
-              }}>
-                {item.kanji}
-              </div>
+              {lang === 'ja' && (
+                <div style={{
+                  fontFamily: '"Shippori Mincho", serif',
+                  fontSize: '11px',
+                  color: '#8c827a',
+                  letterSpacing: '2px',
+                  marginBottom: '6px',
+                }}>
+                  {item.kanji}
+                </div>
+              )}
               <div style={{
                 fontFamily: '"Cinzel", serif',
                 fontSize: item.big ? '42px' : '11px',
@@ -358,7 +362,7 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
           ))}
         </div>
 
-        {/* ── Official Lineage & Guild Accreditation Strip (Authentic Japanese Registry) ── */}
+        {/* ── Official Lineage & Guild Accreditation Strip ── */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -379,14 +383,16 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
             }} />
             <strong style={{ color: '#121212' }}>METI DESIGNATED LIVING CRAFT</strong>
             <span>·</span>
-            <span>経済産業大臣指定伝統的工芸品</span>
+            <span>{lang === 'ja' ? '経済産業大臣指定伝統的工芸品' : 'Designated Traditional Craft Heritage'}</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <span>GUILD ID: <strong>SHOKU-2026-JP</strong></span>
             <span>·</span>
             <span style={{ color: featured.noSuccessor ? '#b82d23' : '#121212', fontWeight: 700 }}>
-              {featured.noSuccessor ? '● PRIORITY SUCCESSION ACTIVE (後継者急募)' : '● ACTIVE MENTORSHIP LINEAGE'}
+              {featured.noSuccessor
+                ? (lang === 'ja' ? '● 後継者急募' : '● PRIORITY SUCCESSION ACTIVE · SUCCESSOR NEEDED')
+                : '● ACTIVE MENTORSHIP LINEAGE'}
             </span>
           </div>
         </div>
@@ -635,7 +641,7 @@ export const EditorialGalleryShowcase: React.FC<EditorialGalleryShowcaseProps> =
             style={{ width: '22px', height: '22px', objectFit: 'contain' }}
           />
           <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#666' }}>
-            SHOKU · 職人リンク · CRAFT ARCHIVE 2026
+            SHOKU · {lang === 'ja' ? '職人リンク · ' : ''}CRAFT ARCHIVE 2026
           </div>
         </div>
         <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>

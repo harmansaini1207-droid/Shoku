@@ -24,9 +24,9 @@ interface UserNavbarProps {
 
 function UserNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout, email }: UserNavbarProps) {
   const TABS: { id: UserTab; label: string; ja: string }[] = [
-    { id: 'home', label: 'Archive Home', ja: '伝承録' },
-    { id: 'profile', label: 'Artisan Dossier', ja: '徒弟帳' },
-    { id: 'masters', label: 'Find Masters', ja: '師範検索' },
+    { id: 'home', label: 'Workshops', ja: '工房一覧' },
+    { id: 'profile', label: 'My Profile', ja: 'プロフィール' },
+    { id: 'masters', label: 'Browse Masters', ja: '師範検索' },
   ];
 
   return (
@@ -52,7 +52,7 @@ function UserNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout, ema
               style={{ height: '22px', width: 'auto', display: 'block' }}
             />
             <div style={{ fontSize: '8px', letterSpacing: '1.5px', color: '#7a756f', textTransform: 'uppercase', marginTop: '2px' }}>
-              Artisan Registry
+              {lang === 'ja' ? '職人リンク' : 'Artisan Network'}
             </div>
           </div>
         </div>
@@ -81,14 +81,7 @@ function UserNavbar({ currentTab, onSelectTab, lang, onToggleLang, onLogout, ema
                 gap: '6px',
               }}
             >
-              <span>{tab.label}</span>
-              <span style={{
-                fontFamily: '"Shippori Mincho", serif',
-                fontSize: '10px',
-                opacity: currentTab === tab.id ? 0.65 : 0.45,
-              }}>
-                {tab.ja}
-              </span>
+              <span>{lang === 'ja' ? tab.ja : tab.label}</span>
             </button>
           ))}
         </div>
@@ -222,14 +215,15 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
           marginBottom: '10px',
         }}>
           <span style={{ width: '6px', height: '6px', backgroundColor: '#b82d23', borderRadius: '1px' }} />
-          ARTISAN CANDIDATE DOSSIER · 徒弟個人調書
+          {lang === 'ja' ? '徒弟個人調書' : 'APPRENTICE CANDIDATE PROFILE'}
         </div>
         <h1 style={{ fontFamily: '"Cinzel", serif', fontSize: '30px', fontWeight: 400, color: '#121212', margin: 0 }}>
-          Craft Apprenticeship Registry
+          {lang === 'ja' ? '弟子登録情報' : 'My Candidate Profile'}
         </h1>
         <p style={{ fontSize: '13px', color: '#666', marginTop: '8px', lineHeight: 1.6 }}>
-          Record your technical foundational craft skills, Japanese language fluency, and heritage apprenticeship intentions.
-          Gemini AI compares this exact dossier against the atelier master&apos;s oral craft explanation.
+          {lang === 'ja'
+            ? '技術基礎、日本語能力、および職人弟子入りの志望動機を記録します。工房の口伝要件と自動照合されます。'
+            : 'Record your foundational craft skills, language ability, and apprentice motivation to match with Japanese craft workshops.'}
         </p>
       </div>
 
@@ -259,10 +253,10 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
           position: 'relative',
         }}>
           <span style={{ fontFamily: '"Cinzel", serif', fontSize: '26px', fontWeight: 600, lineHeight: 1 }}>
-            {name ? name[0].toUpperCase() : '匠'}
+            {name ? name[0].toUpperCase() : (lang === 'ja' ? '匠' : 'A')}
           </span>
           <span style={{ fontSize: '7px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginTop: '4px', color: '#888' }}>
-            DOSSIER
+            PROFILE
           </span>
         </div>
 
@@ -278,7 +272,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
         <div>
-          <label style={labelStyle}>Full Legal Name / 氏名</label>
+          <label style={labelStyle}>{lang === 'ja' ? '氏名（フルネーム）' : 'Full Name'}</label>
           <input
             style={inputStyle}
             value={name}
@@ -287,7 +281,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
           />
         </div>
         <div>
-          <label style={labelStyle}>Primary Residence / 所在地</label>
+          <label style={labelStyle}>{lang === 'ja' ? '居住地（国・都市）' : 'Location / Current City'}</label>
           <input
             style={inputStyle}
             value={city}
@@ -298,7 +292,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
       </div>
 
       <div>
-        <label style={labelStyle}>Technical Skills / 専門技術 (comma-separated)</label>
+        <label style={labelStyle}>{lang === 'ja' ? '専門技術（カンマ区切り）' : 'Technical Skills (comma-separated)'}</label>
         <input
           style={inputStyle}
           value={skills}
@@ -308,7 +302,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
       </div>
 
       <div>
-        <label style={labelStyle}>Japanese Language Proficiency / 日本語能力</label>
+        <label style={labelStyle}>{lang === 'ja' ? '日本語能力' : 'Japanese Language Proficiency'}</label>
         <select
           value={jpLevel}
           onChange={(e) => setJpLevel(e.target.value)}
@@ -321,7 +315,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
       </div>
 
       <div>
-        <label style={labelStyle}>Artisan Statement & Motivation / 志望動機・職歴</label>
+        <label style={labelStyle}>{lang === 'ja' ? '志望動機・職歴' : 'Motivation & Hands-on Experience'}</label>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -333,7 +327,7 @@ function UserProfilePage({ lang, candidateProfile, onSaveProfile }: UserProfileP
 
       {/* Upload zone */}
       <div style={{ marginBottom: '36px' }}>
-        <label style={labelStyle}>Portfolio / CV Document (PDF) · ポートフォリオ</label>
+        <label style={labelStyle}>{lang === 'ja' ? '履歴書・ポートフォリオ (PDF)' : 'Portfolio / Resume Document (PDF)'}</label>
         <div
           style={{
             border: '1.5px dashed rgba(0,0,0,0.18)',
@@ -454,13 +448,15 @@ function FindMastersPage({
           marginBottom: '10px',
         }}>
           <span style={{ width: '6px', height: '6px', backgroundColor: '#b82d23', borderRadius: '1px' }} />
-          LIVING MASTER DIRECTORY · 師範名鑑
+          {lang === 'ja' ? '師範名鑑' : 'LIVING MASTER DIRECTORY'}
         </div>
         <h1 style={{ fontFamily: '"Cinzel", serif', fontSize: '32px', fontWeight: 400, color: '#121212', margin: '0 0 10px' }}>
-          Living Craftsmen Registry
+          {lang === 'ja' ? '伝統工芸師範一覧' : 'Browse Craft Masters'}
         </h1>
         <p style={{ fontSize: '13px', color: '#666', lineHeight: 1.6, maxWidth: '640px', margin: '0 0 28px' }}>
-          Explore Japan&apos;s accredited master artisans seeking dedicated successors. Direct lineage apprenticeship matching under the bilateral tacit knowledge initiative.
+          {lang === 'ja'
+            ? '後継者を求める日本の伝統工芸工房と師範を検索し、弟子入り要件を確認できます。'
+            : 'Explore Japanese master craftspeople seeking successors. View their craft techniques, requirements, and voice explanations.'}
         </p>
 
         {/* Search & Category Filter Tabs */}
@@ -468,7 +464,7 @@ function FindMastersPage({
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by master name, craft technique, or prefecture..."
+            placeholder={lang === 'ja' ? '師範名、工芸技法、所在地で検索...' : 'Search by master name, craft technique, or region...'}
             style={{
               flex: 1,
               minWidth: '260px',
@@ -506,10 +502,7 @@ function FindMastersPage({
                 gap: '6px',
               }}
             >
-              <span>{cat.label}</span>
-              <span style={{ fontFamily: '"Shippori Mincho", serif', fontSize: '9px', opacity: 0.65 }}>
-                {cat.ja}
-              </span>
+              <span>{lang === 'ja' ? cat.ja : cat.label}</span>
             </button>
           ))}
         </div>
@@ -561,7 +554,7 @@ function FindMastersPage({
                     padding: '3px 8px',
                     borderRadius: '1px',
                   }}>
-                    後継者不在 · URGENT
+                    {lang === 'ja' ? '後継者不在 · 緊急' : 'SUCCESSOR NEEDED · URGENT'}
                   </div>
                 )}
                 <div style={{
@@ -591,16 +584,18 @@ function FindMastersPage({
                   color: '#7a756f',
                   marginBottom: '8px',
                 }}>
-                  {m.category} · {m.regionJa}
+                  {m.category} · {lang === 'ja' ? m.regionJa : m.region}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '4px' }}>
                   <h3 style={{ fontFamily: '"Cinzel", serif', fontSize: '18px', fontWeight: 400, color: '#121212', margin: 0 }}>
                     {m.name}
                   </h3>
-                  <span style={{ fontFamily: '"Shippori Mincho", serif', fontSize: '14px', color: '#888' }}>
-                    {m.nameJa}
-                  </span>
+                  {lang === 'ja' && (
+                    <span style={{ fontFamily: '"Shippori Mincho", serif', fontSize: '14px', color: '#888' }}>
+                      {m.nameJa}
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ fontSize: '11px', color: '#555', marginBottom: '12px', letterSpacing: '0.5px' }}>
@@ -643,7 +638,7 @@ function FindMastersPage({
                       alignItems: 'center',
                       gap: '5px',
                     }}>
-                      <span>🎙</span> ATELIER ORAL LINEAGE · 口伝記録 (WISPR FLOW)
+                      <span>🎙</span> {lang === 'ja' ? '工房口伝記録 (音声認識)' : 'WORKSHOP VOICE EXPLANATION'}
                     </div>
                     <div style={{ fontStyle: 'italic', color: '#222' }}>
                       &ldquo;{m.craftExplanation.slice(0, 100)}...&rdquo;

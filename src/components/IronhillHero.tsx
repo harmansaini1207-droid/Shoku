@@ -289,7 +289,7 @@ export const IronhillHero: React.FC = () => {
           <div className="hero__conteiner">
             <div className="hero__top">
               <h1>SHOKU</h1>
-              <p>職人リンク — Craft Archive &amp; Succession Platform</p>
+              <p>Craft Archive &amp; Succession Platform</p>
             </div>
 
             <div className="hero__content">
