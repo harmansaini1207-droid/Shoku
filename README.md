@@ -9,7 +9,7 @@
 
 ---
 
-## 1. WHY THIS EXISTS (The Thesis)
+## WHY THIS EXISTS (The Thesis)
 
 ### The Problem
 Japan is losing its master craftspeople. The average age of a recognized traditional artisan is over 70, and the majority have **no successor (後継者不在)**. When a master retires without an apprentice, decades of tacit knowledge evaporates forever:
@@ -36,27 +36,11 @@ The bottlenecks are:
 
 ---
 
-## 2. KEY DESIGN & VISUAL ARCHITECTURE
 
-* **Mechanical Archival Preloader**: Rolling triple-digit mechanical counter (`000` → `100%`) with dual SVG progress bars, Kanji heritage typography, and a 1-click **Skip** option for rapid live judging.
-* **Three.js WebGL Shader Dissolve**: Custom GLSL FBM noise dissolve shader coupled with Lenis smooth scrolling and parallax Japanese Sumi-e branch masks over the traditional Crimson Sun canvas.
-* **Formo Studio Craft Showcase**: Luxury deep crimson (`#8b151b`) washi capsule card featuring bold statement typography (`SHO • KU`), floating metric badges, and **interactive tacit hotspot inspection pins** ("Singing Weld", "Yakiba-tsuchi boundary", "Ash moisture check").
 
----
 
-## 3. THREE-MINUTE LIVE DEMO SCRIPT FOR JUDGES
 
-| Step | Surface | What You Do & What Judges Experience |
-|---|---|---|
-| **0:00 - 0:30** | **Preloader & Hero** | Watch the mechanical counter roll to 100% (or click Skip). Scroll down through the Three.js shader dissolve as the Sumi-e red sun reveals the craft crisis. Toggle **[ 🌐 EN \| 日本語 ]** to see instant UI translation. |
-| **0:30 - 1:15** | **Formo Showcase & Hotspots** | Hover and click on the interactive pins on the craft centerpiece to inspect the tacit cues ("Singing Weld at 1050°C", "Damp Ash Moisture Test"). Click **"View Craft Manual"** to transition to Layer A. |
-| **1:15 - 2:00** | **Layer A (Live Interview)** | Switch to **Live Interview**. Enter your name, craft (e.g. *Damascus Kitchen Cutlery*), and region. Answer the AI probes (or click **"Simulate Voice"**). Complete all probes, click **"Finalize"**, watch the celebratory confetti fire, and see yourself **instantly registered as an active master**! |
-| **2:00 - 2:30** | **Layer B (Matching)** | Switch to **Talent Matching**. Notice your newly created master is immediately in the dropdown! Select a bladesmith to see metallurgical engineers ranked #1; switch to an indigo master to see textile chemists surface instantly. Inspect the transparent 4-factor breakdown and written reasons. |
-| **2:30 - 3:00** | **Layer C & Dashboard** | Paste a negotiation email or click **"Polite Deferral (Soft No)"**. Watch the co-pilot decode the hidden refusal behind *"前向きに検討"*, highlight the Nemawashi requirements, and generate a polite Keigo reply. Finish on the **Impact Dashboard** to view the ¥850B+ valuation at risk and compounding flywheel. |
-
----
-
-## 4. API REFERENCE TABLE
+ API REFERENCE TABLE
 
 | Method | Endpoint | Payload / Query | Returns | Description |
 |---|---|---|---|---|
@@ -76,18 +60,4 @@ The bottlenecks are:
 
 ---
 
-## 5. LOCAL RUN INSTRUCTIONS
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Start the development server
-npm run dev
-
-# 3. Open in your browser
-http://localhost:3000
-```
-
-Zero configuration, zero API keys, zero cloud locks. Everything runs locally out of the box!
 
