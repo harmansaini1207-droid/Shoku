@@ -564,12 +564,11 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
   const [transcribing, setTranscribing] = useState(false);
   const [audioURL, setAudioURL] = useState(currentMaster.audioDossierUrl || '');
   const [transcript, setTranscript] = useState(
-    currentMaster.craftExplanation ||
-      (lang === 'ja'
-        ? '「当工房では伝統鍛造刃物の身体知と火色判断の技法を継承しています。日々の鍛錬に情熱を持ち、金工の基礎と規律を備えた弟子を受け入れ、代々の技を継承します。」'
-        : 'In our workshop, we preserve traditional hand-hammered cutlery forging and radiant temperature judgment passed down for generations. We seek apprentices with metalwork discipline, hand-eye coordination, and enduring dedication to master our craft lineage.')
+    currentMaster.craftExplanation || ''
   );
-  const [providerBadge, setProviderBadge] = useState<string>('Wispr Flow API');
+  const [liveInterim, setLiveInterim] = useState('');
+  const [speechSupported, setSpeechSupported] = useState(true);
+  const [providerBadge, setProviderBadge] = useState<string>('Web Speech API');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -580,14 +579,18 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
 
   const startRecording = async () => {
     try {
+      // Clear previous transcript so user sees fresh live output
       speechTranscriptRef.current = '';
+      setTranscript('');
+      setLiveInterim('');
+      setAudioURL('');
 
-      // Initialize Web Speech API for instant in-person speech-to-text
       const SpeechRecognition =
         (window as any).SpeechRecognition ||
         (window as any).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
+        setSpeechSupported(true);
         try {
           const recognition = new SpeechRecognition();
           recognition.continuous = true;
@@ -595,32 +598,48 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
           recognition.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
 
           recognition.onresult = (event: any) => {
-            let interim = '';
-            let final = '';
+            let finalText = '';
+            let interimText = '';
             for (let i = 0; i < event.results.length; ++i) {
               if (event.results[i].isFinal) {
-                final += event.results[i][0].transcript + ' ';
+                finalText += event.results[i][0].transcript + ' ';
               } else {
-                interim += event.results[i][0].transcript;
+                interimText += event.results[i][0].transcript;
               }
             }
-            const currentFull = (final + interim).trim();
-            if (currentFull) {
-              speechTranscriptRef.current = currentFull;
-              setTranscript(currentFull);
-              setProviderBadge('Live Dictation (In-Person)');
+            // Commit final text into the main transcript ref + state
+            if (finalText.trim()) {
+              speechTranscriptRef.current = finalText.trim();
+              setTranscript(finalText.trim());
             }
+            // Show interim (in-progress) text separately
+            setLiveInterim(interimText);
+            setProviderBadge('Live Web Speech (In-Person)');
           };
 
           recognition.onerror = (e: any) => {
-            console.warn('Speech recognition warning:', e?.error);
+            if (e?.error === 'no-speech') return; // ignore silence
+            console.warn('Speech recognition error:', e?.error);
+            if (e?.error === 'not-allowed') {
+              setSpeechSupported(false);
+            }
+          };
+
+          recognition.onend = () => {
+            // Auto-restart if still recording (Chrome stops after ~60s of silence)
+            if (mediaRef.current && mediaRef.current.state !== 'inactive') {
+              try { recognition.start(); } catch {}
+            }
           };
 
           recognition.start();
           recognitionRef.current = recognition;
         } catch (e) {
-          console.warn('SpeechRecognition initialization error:', e);
+          console.warn('SpeechRecognition init error:', e);
+          setSpeechSupported(false);
         }
+      } else {
+        setSpeechSupported(false);
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -630,43 +649,45 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       mr.onstop = async () => {
+        setLiveInterim('');
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         const localUrl = URL.createObjectURL(blob);
         setAudioURL(localUrl);
 
-        // Auto transcribe with Wispr Flow API / server endpoint
-        setTranscribing(true);
-        try {
-          const formData = new FormData();
-          formData.append('audio', blob, 'craft_explanation.webm');
-          formData.append('craftHint', craftFocus || 'Japanese traditional craft');
-
-          const res = await fetch('/api/transcribe', {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            // If in-person live speech recognition was not available or empty, use server result
-            if (data.text && !speechTranscriptRef.current) {
-              setTranscript(data.text);
-              setProviderBadge(data.provider || 'Wispr Flow API');
+        // Only call server transcription if Web Speech API gave us nothing
+        if (!speechTranscriptRef.current) {
+          setTranscribing(true);
+          try {
+            const formData = new FormData();
+            formData.append('audio', blob, 'craft_explanation.webm');
+            formData.append('craftHint', craftFocus || 'Japanese traditional craft');
+            const res = await fetch('/api/transcribe', {
+              method: 'POST',
+              body: formData,
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.text) {
+                setTranscript(data.text);
+                setProviderBadge(data.provider || 'Gemini Speech Engine');
+              }
             }
+          } catch (err) {
+            console.error('Server transcription failed:', err);
+          } finally {
+            setTranscribing(false);
           }
-        } catch (err) {
-          console.error('Transcription failed:', err);
-        } finally {
-          setTranscribing(false);
         }
       };
-      mr.start();
+      mr.start(100); // collect data every 100ms
       mediaRef.current = mr;
       setRecording(true);
-    } catch {
-      setTranscript(
-        'Microphone access denied. Please allow microphone permissions or load sample dictation.'
-      );
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError') {
+        setTranscript('⚠ Microphone access denied. Please click the microphone icon in your browser address bar and allow access, then try again.');
+      } else {
+        setTranscript('⚠ Could not start recording: ' + (err?.message || 'Unknown error'));
+      }
     }
   };
 
@@ -1088,6 +1109,46 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
             )}
           </div>
 
+          {/* Speech API not supported warning */}
+          {!speechSupported && (
+            <div
+              style={{
+                padding: '12px 16px',
+                background: 'rgba(184,45,35,0.07)',
+                border: '1px solid rgba(184,45,35,0.3)',
+                borderRadius: '2px',
+                color: '#b82d23',
+                fontSize: '11px',
+                fontWeight: 600,
+                marginBottom: '14px',
+                lineHeight: 1.6,
+              }}
+            >
+              ⚠ Live browser transcription not available in this browser. Use <strong>Google Chrome</strong> for best results.
+              Recording is still saved and will be processed after you stop.
+            </div>
+          )}
+
+          {/* Live interim text display while recording */}
+          {recording && liveInterim && (
+            <div
+              style={{
+                padding: '12px 16px',
+                background: 'rgba(212,175,55,0.06)',
+                border: '1px solid rgba(133,100,4,0.2)',
+                borderRadius: '2px',
+                color: '#856404',
+                fontSize: '13px',
+                fontStyle: 'italic',
+                lineHeight: 1.7,
+                marginBottom: '14px',
+              }}
+            >
+              <span style={{ fontSize: '9px', fontStyle: 'normal', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', display: 'block', marginBottom: '6px', opacity: 0.7 }}>🎙 Listening...</span>
+              {liveInterim}
+            </div>
+          )}
+
           {transcribing && (
             <div
               style={{
@@ -1116,7 +1177,7 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                   animation: 'spin 0.8s linear infinite',
                 }}
               />
-              {lang === 'ja' ? '音声を文字起こし中...' : 'Transcribing Voice Recording...'}
+              {lang === 'ja' ? '音声を文字起こし中...' : 'Processing audio with Gemini...'}
             </div>
           )}
 
@@ -1150,13 +1211,15 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
             <textarea
               value={transcript}
               onChange={(e) => setTranscript(e.target.value)}
-              rows={5}
-              placeholder={lang === 'ja' ? '文字起こしされた内容がここに表示されます。自由に編集や加筆が可能です...' : 'Your transcribed craft words appear here live as you speak. You can freely edit, polish, or add specific apprentice requirements...'}
+              rows={6}
+              placeholder={lang === 'ja'
+                ? '録音を開始すると、話した内容がリアルタイムでここに表示されます。録音後に自由に編集できます...'
+                : 'Press "Start Voice Recording" and speak — your words will appear here in real time as you talk. You can edit the text after recording.'}
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                background: '#faf8f4',
-                border: '1px solid rgba(0,0,0,0.18)',
+                background: recording ? 'rgba(212,175,55,0.04)' : '#faf8f4',
+                border: recording ? '1px solid rgba(133,100,4,0.4)' : '1px solid rgba(0,0,0,0.18)',
                 borderRadius: '2px',
                 color: '#121212',
                 fontSize: '13px',
@@ -1164,7 +1227,8 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 fontFamily: '"GT America Trial", sans-serif',
                 outline: 'none',
                 resize: 'vertical',
-                boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.04)',
+                boxShadow: recording ? 'inset 0 0 0 2px rgba(133,100,4,0.08)' : 'inset 0 2px 6px rgba(0,0,0,0.04)',
+                transition: 'border 0.2s, background 0.2s',
               }}
             />
             <div
@@ -1173,11 +1237,15 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 color: '#7a756f',
                 marginTop: '6px',
                 lineHeight: 1.5,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              💡 {lang === 'ja'
+              <span>💡 {lang === 'ja'
                 ? 'この内容は工房プロフィールに保存され、応募候補者の履歴書と照合して適合スコアを算出します。'
-                : 'This text is saved to your profile. Candidate resumes are evaluated against these exact words to determine matching scores and fit explanations.'}
+                : 'This text is saved to your profile and used to score candidate resumes.'}</span>
+              {transcript && <span style={{ color: '#856404' }}>{transcript.split(' ').filter(Boolean).length} words</span>}
             </div>
           </div>
         </div>
