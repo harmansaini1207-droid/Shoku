@@ -11,14 +11,20 @@ function isJapanese(text: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, context } = await req.json();
+    const { text, context, targetLang: requestedTarget, skipIntent } = await req.json();
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
     const textIsJa = isJapanese(text);
-    const targetLang = textIsJa ? 'EN-US' : 'JA';
+    let targetLang = requestedTarget;
+    if (!targetLang) {
+      targetLang = textIsJa ? 'EN-US' : 'JA';
+    } else {
+      targetLang = targetLang.toUpperCase();
+      if (targetLang === 'EN') targetLang = 'EN-US';
+    }
 
     // 1. Call DeepL for Literal Translation
     let literalTranslation = '';
@@ -51,6 +57,15 @@ export async function POST(req: NextRequest) {
       literalTranslation = textIsJa
         ? 'Literal translation currently generating.'
         : '直訳を生成しています。';
+    }
+
+    if (skipIntent) {
+      return NextResponse.json({
+        translatedText: literalTranslation,
+        literal: literalTranslation,
+        sourceIsJa: textIsJa,
+        targetLang,
+      });
     }
 
     // 2. Call Gemini 2.5 Flash for Cultural Intent & Unspoken Subtext
@@ -101,6 +116,7 @@ Format your response in 2-3 crisp, elegant paragraphs with clean bullet points w
     }
 
     return NextResponse.json({
+      translatedText: literalTranslation,
       literal: literalTranslation,
       intent: culturalIntent,
       detectedJa: textIsJa,

@@ -571,6 +571,9 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
   const [providerBadge, setProviderBadge] = useState<string>('Web Speech API');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [prevTranscript, setPrevTranscript] = useState<string | null>(null);
+  const [translationMsg, setTranslationMsg] = useState<string>('');
 
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -713,6 +716,54 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
         : '私たちは大阪・堺の打刃物工房です。500年の鍛造・火造り・焼き入れ技術を守り、熱意ある国際的な弟子を受け入れ、代々の技法を身体知として正統に継承します。'
     );
     setProviderBadge('Wispr Flow API');
+  };
+
+  const handleTranslateTranscript = async (explicitTarget?: string) => {
+    if (!transcript || !transcript.trim() || translating) return;
+    setTranslating(true);
+    setTranslationMsg('');
+    try {
+      const isJa = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf]/.test(transcript);
+      const target = explicitTarget || (isJa ? 'EN' : 'JA');
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: transcript,
+          targetLang: target,
+          skipIntent: true,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const newText = data.translatedText || data.literal;
+        if (newText) {
+          setPrevTranscript(transcript);
+          setTranscript(newText);
+          setTranslationMsg(target === 'JA' ? '✓ Translated to Japanese (DeepL)' : '✓ Translated to English (DeepL)');
+          setTimeout(() => setTranslationMsg(''), 4500);
+        }
+      } else {
+        setTranslationMsg('Translation failed. Please try again.');
+        setTimeout(() => setTranslationMsg(''), 3000);
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      setTranslationMsg('Translation failed. Please try again.');
+      setTimeout(() => setTranslationMsg(''), 3000);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleRevertTranscript = () => {
+    if (prevTranscript !== null) {
+      const current = transcript;
+      setTranscript(prevTranscript);
+      setPrevTranscript(current);
+      setTranslationMsg('↺ Swapped with previous text');
+      setTimeout(() => setTranslationMsg(''), 3000);
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -1189,6 +1240,8 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 marginBottom: '8px',
+                flexWrap: 'wrap',
+                gap: '8px',
               }}
             >
               <label
@@ -1203,10 +1256,102 @@ function BusinessProfilePage({ email, lang, master, onUpdateMaster }: BusinessPr
               >
                 <span>✦</span> {lang === 'ja' ? '文字起こしされた技法伝承・要件（編集可能）' : 'Transcribed Craft Explanation (Editable)'}
               </label>
-              <span style={{ fontSize: '9px', color: '#7a756f', letterSpacing: '1px' }}>
-                {lang === 'ja' ? '候補者マッチングに使用' : 'Used for Candidate Matching'}
-              </span>
+
+              {/* Translation controls */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {prevTranscript !== null && (
+                  <button
+                    type="button"
+                    onClick={handleRevertTranscript}
+                    disabled={translating}
+                    title="Switch back to previous text"
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      background: '#fff',
+                      border: '1px solid rgba(0,0,0,0.18)',
+                      borderRadius: '2px',
+                      color: '#555',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    ↺ {lang === 'ja' ? '元に戻す' : 'Swap / Undo'}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleTranslateTranscript()}
+                  disabled={translating || !transcript || !transcript.trim()}
+                  title="Translate between English and Japanese"
+                  style={{
+                    padding: '4px 12px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.4px',
+                    background: translating ? '#d8d4ca' : '#856404',
+                    border: 'none',
+                    borderRadius: '2px',
+                    color: '#fff',
+                    cursor: translating || !transcript || !transcript.trim() ? 'not-allowed' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                  }}
+                >
+                  {translating ? (
+                    <>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '10px',
+                          height: '10px',
+                          border: '2px solid #fff',
+                          borderTopColor: 'transparent',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite',
+                        }}
+                      />
+                      {lang === 'ja' ? '翻訳中...' : 'Translating...'}
+                    </>
+                  ) : (
+                    <>
+                      <span>🌐</span>
+                      {transcript && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf]/.test(transcript)
+                        ? (lang === 'ja' ? '英語に翻訳 (DeepL)' : 'Translate to English')
+                        : (lang === 'ja' ? '日本語に翻訳 (DeepL)' : 'Translate to Japanese')}
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {translationMsg && (
+              <div
+                style={{
+                  padding: '6px 12px',
+                  background: 'rgba(42,99,68,0.08)',
+                  border: '1px solid rgba(42,99,68,0.25)',
+                  borderRadius: '2px',
+                  color: '#2a6344',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>{translationMsg}</span>
+                <span style={{ fontSize: '9px', opacity: 0.7 }}>Powered by DeepL</span>
+              </div>
+            )}
 
             <textarea
               value={transcript}
