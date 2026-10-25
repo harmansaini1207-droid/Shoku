@@ -64,7 +64,6 @@ One-click toggle between **English** and **日本語** across every surface. Bui
 | 📋 **Workshop Management** | Full business console for masters to manage their profile, workshops, and candidates |
 | 👤 **Apprentice Profiles** | Candidates upload resumes; Gemini extracts skills and matches them to masters |
 | 🌐 **Bilingual UI** | Full English ↔ 日本語 toggle — no barriers for either side |
-| 📊 **Heritage Dashboard** | Live stats on masters saved, candidates matched, and enterprise value preserved |
 | 🔒 **Dual Login System** | Separate portals for craft masters (business) and candidates (apprentices) |
 
 ---
@@ -126,86 +125,7 @@ shoku/
 
 ---
 
-## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18+
-- A Google Gemini API key
-- A WisperFlow API key
-- A Supabase project
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/harmansaini1207-droid/Shoku.git
-cd Shoku
-```
-
-### 2. Install dependencies
-```bash
-npm install
-```
-
-### 3. Configure environment variables
-Copy `.env.example` to `.env.local` and fill in your keys:
-```bash
-cp .env.example .env.local
-```
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
-GEMINI_API_KEY=your_gemini_api_key
-WISPERFLOW_API_KEY=your_wisperflow_key
-```
-
-### 4. Run the development server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) and log in as a **Master** or **Apprentice**.
-
----
-
-## 🔌 API Reference
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/roster` | All masters & candidates |
-| `GET/POST` | `/api/masters` | List or register masters |
-| `GET/POST` | `/api/manuals` | Retrieve or generate craft manuals |
-| `POST` | `/api/interview` | AI-guided master interview (start / answer / finalize) |
-| `GET` | `/api/matching` | Ranked candidate list with Gemini scoring & explanation |
-| `POST` | `/api/transcribe` | Audio → transcript via WisperFlow |
-| `POST` | `/api/culture` | Tatemae vs Honne email decoder + Keigo reply generator |
-| `GET` | `/api/dashboard` | Heritage impact stats |
-| `GET` | `/api/health` | Runtime health check |
-
----
-
-## 🎨 Design Philosophy
-
-SHOKU is built with an **editorial dark aesthetic** — evoking the precision, restraint, and depth of Japanese craft culture:
-
-- Deep charcoal backgrounds with warm amber and indigo accents
-- Cinematic preloader with Three.js particle systems
-- GSAP-powered smooth scroll and micro-animations throughout
-- Monospace type for technical precision; editorial serif for cultural warmth
-- Every interaction feels considered — like the work it is built to preserve
-
----
-
-## 🌏 Impact
-
-| Metric | Value |
-|---|---|
-| Traditional crafts at risk of extinction | 200+ in Japan alone |
-| Average age of a recognized Japanese artisan | 70+ years |
-| Indian skilled workers potentially eligible for placement | Millions |
-| Heritage enterprise value at risk | ¥ Billions |
-| Time to first AI-generated candidate match | < 5 seconds |
-
----
 
 ## 👥 Team
 
