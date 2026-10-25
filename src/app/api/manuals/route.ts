@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       const master = masterRepository.getMasterById(masterId);
       if (master) {
         manual = generateCraftManual(master);
-        manualRepository.saveManual(manual);
+        await manualRepository.saveManual(manual);
       }
     }
     return NextResponse.json({ manual: manual || null });
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     const manual = generateCraftManual(master);
-    manualRepository.saveManual(manual);
+    await manualRepository.saveManual(manual);
 
     return NextResponse.json({ manual, success: true });
   } catch (err: any) {

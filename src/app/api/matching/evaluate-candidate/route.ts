@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { masterRepository } from '@/lib/repository/masterRepository';
 import { SEED_CANDIDATES } from '@/lib/data/seed';
 
 export const dynamic = 'force-dynamic';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mtaduagclxirfhvjnrzo.supabase.co';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_CGUpc5vRZawcTL1PduTiMw_RbBDWdQr';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const GEMINI_API_KEY =
   process.env.GEMINI_API_KEY || 'AQ.Ab8RN6KBPtBAwV6DsowyWHv4rMIFIo_Of83OvLkoUcXTP2CRxA';
@@ -113,6 +118,19 @@ Output ONLY raw JSON. No markdown fences, no explanation.`;
         tactileStrengths: 'Strong hand-eye coordination and dedication to repetitive precision.',
         recommendedMode: 'ssw-relocation',
       };
+    }
+
+    // Persist evaluation to Supabase
+    try {
+      await supabase.from('candidate_evaluations').insert([{
+        master_id: master.id,
+        candidate_id: candidateData.id || candidateData.name,
+        overall_score: evaluation.score,
+        breakdown: evaluation,
+        explanation: evaluation.fitExplanation,
+      }]);
+    } catch {
+      // Non-blocking
     }
 
     return NextResponse.json({

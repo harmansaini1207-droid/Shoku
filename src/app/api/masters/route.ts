@@ -5,7 +5,7 @@ import { Master } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const masters = masterRepository.getAllMasters();
+  const masters = await masterRepository.getAllMastersAsync();
   return NextResponse.json({ masters });
 }
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    masterRepository.saveMaster(body);
+    await masterRepository.saveMaster(body);
     return NextResponse.json({ master: body, success: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Failed to save master' }, { status: 500 });
